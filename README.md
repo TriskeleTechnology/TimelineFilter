@@ -1,4 +1,4 @@
-# Slider Filter 
+# Timeline Filter 
 
 ## Screenshot
 <p align="left">
@@ -13,7 +13,6 @@ Custom PowerBI Visual to filter the date using a timeline.
 - **Tester:** [Ryan Fleming](mailto:ryan.fleming@triskele.health)
 
 ## Documentation and Resources
-- Technical Specifications Document: /Volumes/triskele/Shared/07-Technology/Projects/2000 - PowerBI Visuals/Design/TimelineFilter.pdf
 - PowerBI Documentation: https://docs.microsoft.com/en-us/power-bi/developer/visuals/
 
 -----
