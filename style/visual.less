@@ -51,6 +51,18 @@
             text-anchor: middle;
         }
 
+        .mainArea .above{
+            transform: translate(0, -10px);
+        } 
+
+        .mainArea .inside{
+            transform: translate(0, 25px);
+        }
+
+        .mainArea .below{
+            transform: translate(0, 60px);
+        }
+
         .cellRect {
             stroke: #333444;
         }
@@ -82,11 +94,11 @@
         cursor: pointer;
 
         .periodSlicer {
-            &Rect {
-                stroke: #aaa;
-                stroke-width: 2px;
-                fill: transparent;
-            }
+            // &Rect {
+            //     stroke: #aaa;
+            //     stroke-width: 2px;
+            //     fill: transparent;
+            // }
 
             &Granularities,
             &Selection {
@@ -102,6 +114,18 @@
         .periodSlicerRect {
             pointer-events: none;
         }
+    }
+
+    .rangeTextArea.left{
+        transform: translate(calc(0% + 20px), 0);
+    }
+
+    .rangeTextArea.right{
+        transform: translate(calc(100% - 20px), 0);
+    }
+
+    .rangeTextArea.center{
+        transform: translate(50%, 0);
     }
 
     .timelineWrapper {

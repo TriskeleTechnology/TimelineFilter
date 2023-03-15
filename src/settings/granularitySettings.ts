@@ -28,12 +28,29 @@ import { GranularityType } from "../granularity/granularityType";
 
 export class GranularitySettings {
     public show: boolean = true;
-    public scaleColor: string = "#000000";
-    public sliderColor: string = "#AAAAAA";
-    public granularity: GranularityType = GranularityType.month;
     public granularityYearVisibility: boolean = true;
     public granularityQuarterVisibility: boolean = true;
     public granularityMonthVisibility: boolean = true;
     public granularityWeekVisibility: boolean = true;
     public granularityDayVisibility: boolean = true;
+    public granularity: GranularityType = GranularityType.month;
+    public position: string = "left";
+    public fontFamily: string = 'Segoe UI';
+    public fontSize: number = 9;
+    public fontColor: string = "#00458F";
+    public Bold: boolean = false;
+    public Italic: boolean = false;
+    public Underline: boolean = false;
+    public selectedfillColor: string = "transparent";
+    public transparency: number = 50;
+    public selectedOutlineRadius: number = 0;
+    public selectedOutlineLeft: boolean = true;
+    public selectedOutlineRight: boolean = true;
+    public selectedOutlineTop: boolean = true;
+    public selectedOutlineBottom: boolean = true;
+    public outlineColor: string = "#3F464B";
+    public selectedOutlineThickness: number = 2;
+    public scale: boolean = true;
+    public scaleColor: string = "#8C9093";
+    public scaleThickness: number = 2;
 }

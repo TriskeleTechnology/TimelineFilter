@@ -1,0 +1,17 @@
+{
+    "version": "2.0",
+    "author": {"name":"Andie McPartland","email":"andie.mcpartland@triskele.health"},
+    "resources": [
+        {
+            "resourceId": "rId0",
+            "sourceType": 5,
+            "file": "resources/Timeline14479910791001.pbiviz.json"
+        }
+    ],
+    "visual": {"name":"Triskele Timeline Filter","displayName":"Triskele Timeline Filter 2.0","guid":"Timeline14479910791001","visualClassName":"Timeline","version":"2.0","description":"Triskele Timeline filter for filtering timelime","supportUrl":"https://community.powerbi.com","gitHubUrl":"https://github.com/TriskeleTechnology/TimelineFilter"},
+    "metadata": {
+        "pbivizjson": {
+            "resourceId": "rId0"
+        }
+    }  
+}

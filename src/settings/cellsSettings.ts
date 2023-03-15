@@ -25,8 +25,20 @@
  */
 
 export class CellsSettings {
-    public fillSelected: string = "#ADD8E6";
-    public fillUnselected: string = "";
-    public strokeColor: string = "#333444";
-    public selectedStrokeColor: string = "#333444";
+    public selectedfillColor: string = "#ADD5FF";
+    public selectedfillopacity: number = 100;
+    public fillUnselected: string = "#D9DADB";
+    public unselectedfillopacity: number = 100;
+
+    public selectedStrokeColor: string = "#00458F";
+    public selectedoutlineThickness: number = 1;
+    public strokeColor: string = "#8C9093";
+    public unselectedoutlineThickness: number = 1;
+    public capSize: number = 10;
+    public capfillColor: string = "#8C9093";
+    public capfillOpacity: number = 100;
+    public capoutlineRadius: number = 20;
+    public capoutlineColor: string = "#8C9093";
+    public capoutlineThickness: number = 2;
+
 }

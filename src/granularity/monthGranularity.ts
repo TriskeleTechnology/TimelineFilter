@@ -34,10 +34,12 @@ import { GranularityBase } from "./granularityBase";
 import { IGranularityRenderProps } from "./granularityRenderProps";
 import { GranularityType } from "./granularityType";
 import powerbiVisualsApi from "powerbi-visuals-api";
+import { dateFormatSettings } from "../settings/dateFormatSettings";
+import { CalendarSettings } from "../settings/calendarSettings";
 
 export class MonthGranularity extends GranularityBase {
-    constructor(calendar: Calendar, locale: string) {
-        super(calendar, locale, Utils.GET_GRANULARITY_PROPS_BY_MARKER("Month"));
+    constructor(calendar: Calendar, locale: string, dateFormatSettings:dateFormatSettings, CalendarSettings: CalendarSettings) {
+        super(calendar, locale, Utils.GET_GRANULARITY_PROPS_BY_MARKER("Month"), dateFormatSettings, CalendarSettings);
     }
 
     public render(props: IGranularityRenderProps, isFirst: boolean): Selection<any, any, any, any> {
@@ -52,28 +54,37 @@ export class MonthGranularity extends GranularityBase {
         return GranularityType.month;
     }
 
-    public splitDate(date: Date): (string | number)[] {
+    public splitDate(date: Date, dateFormatSettings: dateFormatSettings, calendarSettings: CalendarSettings): (string | number)[] {
+        // var month = this.getMonthName(date, calendarSettings)
+        // var year: string = ''
+        // if (dateFormatSettings.yearFormat == "yy"){
+        //     year = "'" + this.getYearName(date);
+        // }
+        // else if (dateFormatSettings.yearFormat != "yy"){
+        //     year = this.getYearName(date);
+        // }
+
         return [
-            this.shortMonthName(date),
-            this.calendar.determineYear(date),
-        ];
+            this.getMonthName(date),
+            dateFormatSettings.yearFormat == "yy" ? "'" + this.getYearName(date) : this.getYearName(date),
+        ]
     }
 
-    public sameLabel(firstDatePeriod: ITimelineDatePeriod, secondDatePeriod: ITimelineDatePeriod): boolean {
-        return this.shortMonthName(firstDatePeriod.startDate) === this.shortMonthName(secondDatePeriod.startDate)
+    public sameLabel(firstDatePeriod: ITimelineDatePeriod, secondDatePeriod: ITimelineDatePeriod, dateFormatSettings: dateFormatSettings, calendarSettings: CalendarSettings): boolean {
+        return this.getMonthName(firstDatePeriod.startDate) === this.getMonthName(secondDatePeriod.startDate)
             && this.calendar.determineYear(firstDatePeriod.startDate) === this.calendar.determineYear(secondDatePeriod.startDate);
     }
 
-    public generateLabel(datePeriod: ITimelineDatePeriod): ITimelineLabel {
-        const quarter: string = this.quarterText(datePeriod.startDate);
-        const monthName: string = `${this.shortMonthName(datePeriod.startDate)} ${datePeriod.year}`;
-        const monthShortName: string = `${this.shortMonthName(datePeriod.startDate)} 
-        ${datePeriod.year}`;
+    public generateLabel(datePeriod: ITimelineDatePeriod, dateFormatSettings: dateFormatSettings,calendar: Calendar, calendarSettings: CalendarSettings): ITimelineLabel {
+        
+        var currentdate: Date = datePeriod.startDate;
+        var monthName: string = this.getMonthName(currentdate);
+        var yearName = dateFormatSettings.yearFormat == "yy" ? "'" + this.getYearName(currentdate) : this.getYearName(currentdate);
 
         return {
             id: datePeriod.index,
-            text: monthShortName,
-            title: monthName,
+            text: `${monthName} ${yearName}`,
+            title: `${monthName} ${yearName}`,
         };
     }
 }

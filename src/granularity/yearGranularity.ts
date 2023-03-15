@@ -34,6 +34,8 @@ import { Utils } from "../utils";
 import { GranularityBase } from "./granularityBase";
 import { IGranularityRenderProps } from "./granularityRenderProps";
 import { GranularityType } from "./granularityType";
+import { dateFormatSettings } from "../settings/dateFormatSettings";
+import { CalendarSettings } from "../settings/calendarSettings";
 
 export class YearGranularity extends GranularityBase {
     private localizationKey: string = "Visual_Granularity_Year";
@@ -42,8 +44,10 @@ export class YearGranularity extends GranularityBase {
         calendar: Calendar,
         locale: string,
         protected localizationManager: powerbiVisualsApi.extensibility.ILocalizationManager,
+        dateFormatSettings: dateFormatSettings,
+        CalendarSettings: CalendarSettings
     ) {
-        super(calendar, locale, Utils.GET_GRANULARITY_PROPS_BY_MARKER("Year"));
+        super(calendar, locale, Utils.GET_GRANULARITY_PROPS_BY_MARKER("Year"), dateFormatSettings, CalendarSettings);
     }
 
     public getType(): GranularityType {
@@ -58,23 +62,64 @@ export class YearGranularity extends GranularityBase {
         return super.render(props, isFirst);
     }
 
-    public splitDate(date: Date): (string | number)[] {
-        return [this.calendar.determineYear(date)];
+    public splitDate(date: Date, dateFormatSettings: dateFormatSettings): (string | number)[] {
+        // var year: number;
+        // var adjustedYear:number = this.calendar.determineYear(date);
+        // if (dateFormatSettings.yearFormat == "yy"){
+        //     year = adjustedYear % 100;
+        // }
+        // else if (dateFormatSettings.yearFormat != "yy"){
+        //     year = adjustedYear;
+        // }
+        // return [year];
+
+        // return [this.calendar.determineYear(date)];
+        return [dateFormatSettings.yearFormat == "yy" ? "'" + this.getYearName(date) : this.getYearName(date)];
     }
 
     public sameLabel(firstDatePeriod: ITimelineDatePeriod, secondDatePeriod: ITimelineDatePeriod): boolean {
         return firstDatePeriod.year === secondDatePeriod.year;
     }
 
-    public generateLabel(datePeriod: ITimelineDatePeriod): ITimelineLabel {
-        const localizedYear = this.localizationManager
-            ? this.localizationManager.getDisplayName(this.localizationKey)
-            : this.localizationKey;
+    public generateLabel(datePeriod: ITimelineDatePeriod, dateFormatSettings: dateFormatSettings, calendar: Calendar): ITimelineLabel {
+        
+
+        // const currentdate = datePeriod.startDate
+        // var adjustedYear:number = this.calendar.determineYear(currentdate)
+        // currentdate.setFullYear(adjustedYear);
+        // const localizedYear = this.localizationManager
+        //     ? this.localizationManager.getDisplayName(this.localizationKey)
+        //     : this.localizationKey;
+         
+
+        // if (dateFormatSettings.yearFormat == "yy"){
+        //     yearName = "'" + this.getYearName(currentdate);
+        //     nextyearName = "'" + this.getYearName(calendar.getNextYear(currentdate))
+        // }
+        // else if (dateFormatSettings.yearFormat != "yy"){
+        //     yearName = this.getYearName(currentdate);
+        //     nextyearName = this.getYearName(calendar.getNextYear(currentdate))
+        // }
+
+        // if (dateFormatSettings.datecategorization == true ){
+        //     text = `${yearName}`;
+        //     nexttext = ` - ${nextyearName}`
+        // }
+        // else{
+        //     text = `${yearName}`;
+        // }
+        // return {
+        //     id: datePeriod.index,
+        //     text: text  + nexttext,
+        //     title: `${localizedYear}`+ text + nexttext,
+        // };
+
+        var yearName = dateFormatSettings.yearFormat == "yy" ? "'" + this.getYearName(datePeriod.startDate) : this.getYearName(datePeriod.startDate);
 
         return {
             id: datePeriod.index,
-            text: `${datePeriod.year}`,
-            title: `${localizedYear} ${datePeriod.year}`,
+            text: yearName,
+            title: yearName
         };
     }
 }

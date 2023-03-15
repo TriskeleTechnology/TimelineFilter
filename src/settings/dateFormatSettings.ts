@@ -24,13 +24,12 @@
  *  THE SOFTWARE.
  */
 
-export class LabelsSettings {
-    public show: boolean = true;
-    public position: string = "above";
-    public fontFamily: string = 'Segoe UI';
-    public fontSize: number = 9;
-    public fontColor: string = "#000000";
-    public Bold: boolean = false;
-    public Italic: boolean = false;
-    public Underline: boolean = false;
+export class dateFormatSettings {
+    public yearFormat: string = "yyyy";
+    public quarterFormat: string = "QX";
+    public monthFormat: string = "MMM";
+    public dayFormat: string = "dd";
+    public dayofweek: boolean = false;
+    public dayofweekFormat: string = "ddd";
+    public datecategorization: boolean = false;
 }

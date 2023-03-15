@@ -35,10 +35,12 @@ import { IGranularityRenderProps } from "./granularityRenderProps";
 import { GranularityType } from "./granularityType";
 import { YearGranularity } from "./yearGranularity";
 import powerbiVisualsApi from "powerbi-visuals-api";
+import { dateFormatSettings } from "../settings/dateFormatSettings";
+import { CalendarSettings } from "../settings/calendarSettings";
 
 export class QuarterGranularity extends GranularityBase {
-    constructor(calendar: Calendar, locale: string) {
-        super(calendar, locale, Utils.GET_GRANULARITY_PROPS_BY_MARKER("Quarter"));
+    constructor(calendar: Calendar, locale: string, dateFormatSettings: dateFormatSettings,CalendarSettings:CalendarSettings) {
+        super(calendar, locale, Utils.GET_GRANULARITY_PROPS_BY_MARKER("Quarter"), dateFormatSettings, CalendarSettings);
     }
 
     public render(props: IGranularityRenderProps, isFirst: boolean): Selection<any, any, any, any> {
@@ -53,25 +55,39 @@ export class QuarterGranularity extends GranularityBase {
         return GranularityType.quarter;
     }
 
-    public splitDate(date: Date): (string | number)[] {
+    public splitDate(date: Date, dateFormatSettings: dateFormatSettings): (string | number)[] {
+        // var quarter = this.getQuarterName(date, dateFormatSettings)
+        // var year: string = ''
+        // if (dateFormatSettings.yearFormat == "yy"){
+        //     year = "'" + this.getYearName(date);
+        // }
+        // else if (dateFormatSettings.yearFormat != "yy"){
+        //     year = this.getYearName(date);
+        // }
+        
+        // return [
+        //     quarter,
+        //     year,
+        // ];
         return [
-            this.quarterText(date),
-            this.calendar.determineYear(date),
+            this.getQuarterName(date, dateFormatSettings)
         ];
     }
 
-    public sameLabel(firstDatePeriod: ITimelineDatePeriod, secondDatePeriod: ITimelineDatePeriod): boolean {
-        return this.quarterText(firstDatePeriod.startDate) === this.quarterText(secondDatePeriod.startDate)
+    public sameLabel(firstDatePeriod: ITimelineDatePeriod, secondDatePeriod: ITimelineDatePeriod, dateFormatSettings: dateFormatSettings): boolean {
+        return this.getQuarterName(firstDatePeriod.startDate, dateFormatSettings) === this.getQuarterName(secondDatePeriod.startDate, dateFormatSettings)
             && firstDatePeriod.year === secondDatePeriod.year;
     }
 
-    public generateLabel(datePeriod: ITimelineDatePeriod): ITimelineLabel {
-        const quarter: string = this.quarterText(datePeriod.startDate);
+    public generateLabel(datePeriod: ITimelineDatePeriod, dateFormatSettings: dateFormatSettings, calendar: Calendar): ITimelineLabel {
+        
+        var quarterName = this.getQuarterName(datePeriod.startDate, dateFormatSettings);
 
         return {
             id: datePeriod.index,
-            text: `${quarter} ${datePeriod.year}`,
-            title: `${quarter} ${datePeriod.year}`,
+            text: `${quarterName}`,
+            title: `${quarterName}`
         };
+
     }
 }

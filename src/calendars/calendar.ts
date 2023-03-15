@@ -27,7 +27,7 @@
 import { GranularityData } from "../granularity/granularityData";
 import { CalendarSettings } from "../settings/calendarSettings";
 import { WeekDaySettings } from "../settings/weekDaySettings";
-import { WeeksDetermintaionStandardsSettings } from "../settings/weeksDetermintaionStandardsSettings";
+import { calendaTypeSettings } from "../settings/calendaTypeSettings";
 import { Utils } from "../utils";
 import { WeekStandards } from "./weekStandards";
 
@@ -54,8 +54,8 @@ export class Calendar {
     protected YearOffset: number = 1;
 
     constructor(calendarFormat: CalendarSettings, weekDaySettings: WeekDaySettings) {
-        this.isDaySelection = weekDaySettings.daySelection;
-        this.firstDayOfWeek = weekDaySettings.day;
+        this.isDaySelection = true;
+        this.firstDayOfWeek = calendarFormat.firstdayofweek;
         this.firstMonthOfYear = calendarFormat.month;
         this.firstDayOfYear = calendarFormat.day;
 
@@ -84,27 +84,37 @@ export class Calendar {
             firstDayOfYear,
         );
 
-        return date.getFullYear() + this.getFiscalYearAjustment() - ((firstDate <= date)
+        return date.getFullYear() - ((firstDate <= date)
             ? this.EmptyYearOffset
             : this.YearOffset);
+    }
+
+    public determineMonth(date: Date): number {
+        const month: number = date.getMonth();
+        const year: number = this.determineYear(date);
+        const firstDayOfYear = this.getFirstDayOfYear();
+
+        return month - ((firstDayOfYear <= date.getDate())? 0: 1);
     }
 
     public determineWeek(date: Date): number[] {
         // For fiscal calendar case that started not from the 1st January a year may be greater on 1.
         // It's Ok until this year is used to calculate date of first week.
         // So, here is some adjustment was applied.
-        const year: number = this.determineYear(date);
-        const fiscalYearAdjustment = this.getFiscalYearAjustment();
+        const year: number = date.getFullYear();
+        const dateOfFirstWeek: Date = new Date(
+                                            date.getFullYear(),
+                                            0,
+                                            1,
+                                        );
+        const dateOfFirstFullWeek: Date = this.getDateOfFirstFullWeek(year);
 
-        const dateOfFirstWeek: Date = this.getDateOfFirstWeek(year - fiscalYearAdjustment);
-        const dateOfFirstFullWeek: Date = this.getDateOfFirstFullWeek(year - fiscalYearAdjustment);
         // But number of weeks must be calculated using original date.
         const weeks: number = Utils.GET_NUMBER_OF_WEEKS_BETWEEN_DATES(dateOfFirstFullWeek, date);
 
         if (date >= dateOfFirstFullWeek && dateOfFirstWeek < dateOfFirstFullWeek) {
             return [weeks + 1, year];
         }
-
         return [weeks, year];
     }
 
@@ -123,15 +133,31 @@ export class Calendar {
     public getNextDate(date: Date): Date {
         return GranularityData.NEXT_DAY(date);
     }
+    public getLastDatePeriod(num: number, date: Date): IPeriodDates {
+        // return date.setDate(date.getDate() + num);
+        const year: number = date.getFullYear();
+        const month: number = date.getMonth();
+        const startDate = new Date(year, month, date.getDate() - num);
+        const endDate = new Date(year, month, date.getDate() + 1);
+        return { startDate, endDate };
+    }
+    public getNextWeek(date: Date): Date {
+        return GranularityData.NEXT_WEEK(date);
+    }
+    public getNextMonth(date: Date): Date {
+        return GranularityData.NEXT_MONTH(date);
+    }
+    public getNextYear(date: Date): Date {
+        return GranularityData.NEXT_YEAR(date);
+    }
 
     public getWeekPeriod(date: Date): IPeriodDates {
+        
         const year: number = date.getFullYear();
         const month: number = date.getMonth();
         const dayOfWeek: number = date.getDay();
 
-        const weekDay = this.isDaySelection
-            ? this.firstDayOfWeek
-            : new Date(year, this.firstMonthOfYear, this.firstDayOfYear).getDay();
+        const weekDay = this.firstDayOfWeek
 
         let deltaDays: number = 0;
         if (weekDay !== dayOfWeek) {
@@ -144,6 +170,28 @@ export class Calendar {
 
         const daysToWeekEnd = (7 - deltaDays);
         const startDate = new Date(year, month, date.getDate() - deltaDays);
+        const endDate = new Date(year, month, date.getDate() + daysToWeekEnd);
+
+        return { startDate, endDate };
+    }
+    public getLastWeekPeriod(num: number, date: Date): IPeriodDates {
+        const year: number = date.getFullYear();
+        const month: number = date.getMonth();
+        const dayOfWeek: number = date.getDay();
+
+        const weekDay = this.firstDayOfWeek
+
+        let deltaDays: number = 0;
+        if (weekDay !== dayOfWeek) {
+            deltaDays = dayOfWeek - weekDay;
+        }
+
+        if (deltaDays < 0) {
+            deltaDays = 7 + deltaDays;
+        }
+
+        const daysToWeekEnd = (7 - deltaDays);
+        const startDate = new Date(year, month, date.getDate() - 7*num -  deltaDays);
         const endDate = new Date(year, month, date.getDate() + daysToWeekEnd);
 
         return { startDate, endDate };
@@ -179,6 +227,15 @@ export class Calendar {
 
         return { startDate, endDate };
     }
+    public getLastMonthPeriod(num: number, date: Date): IPeriodDates {
+        const year: number = date.getFullYear();
+        const month: number = date.getMonth();
+
+        const startDate: Date = new Date(year, month - num, 1);
+        const endDate: Date = new Date(year, month + 1, 1);
+
+        return { startDate, endDate };
+    }
 
     public getYearPeriod(date: Date): IPeriodDates {
         const year: number = date.getFullYear();
@@ -188,16 +245,23 @@ export class Calendar {
 
         return { startDate, endDate };
     }
+    public getLastYearPeriod(num: number, date: Date): IPeriodDates {
+        const year: number = date.getFullYear();
+
+        const startDate: Date = new Date(year-num, 0, 1);
+        const endDate: Date = new Date(year + 1, 0, 1);
+
+        return { startDate, endDate };
+    }
 
     public isChanged(
         calendarSettings: CalendarSettings,
-        weekDaySettings: WeekDaySettings,
-        weeksDetermintaionStandardsSettings: WeeksDetermintaionStandardsSettings
+        calendaTypeSettings: calendaTypeSettings
     ): boolean {
         return this.firstMonthOfYear !== calendarSettings.month
             || this.firstDayOfYear !== calendarSettings.day
-            || this.firstDayOfWeek !== weekDaySettings.day
-            || weeksDetermintaionStandardsSettings.weekStandard !== WeekStandards.NotSet;
+            || this.firstDayOfWeek !== calendarSettings.firstdayofweek
+            || calendaTypeSettings.weekStandard !== WeekStandards.NotSet;
     }
 
     public getDateOfFirstWeek(year: number): Date {
@@ -217,7 +281,7 @@ export class Calendar {
     }
 
     private calculateDateOfFirstFullWeek(year: number): Date {
-        let date: Date = new Date(year, this.firstMonthOfYear, this.firstDayOfYear);
+        let date: Date = new Date(year, 0, 1);
 
         const weekDay = this.isDaySelection
             ? this.firstDayOfWeek

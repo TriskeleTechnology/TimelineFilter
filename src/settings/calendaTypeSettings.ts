@@ -24,13 +24,8 @@
  *  THE SOFTWARE.
  */
 
-export class LabelsSettings {
-    public show: boolean = true;
-    public position: string = "above";
-    public fontFamily: string = 'Segoe UI';
-    public fontSize: number = 9;
-    public fontColor: string = "#000000";
-    public Bold: boolean = false;
-    public Italic: boolean = false;
-    public Underline: boolean = false;
+import { WeekStandards } from "../calendars/weekStandards";
+
+export class calendaTypeSettings {
+    public weekStandard: number = 0;
 }

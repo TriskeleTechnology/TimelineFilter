@@ -1,7 +1,7 @@
 import { Calendar } from "./calendar";
 import { CalendarSettings } from "../settings/calendarSettings";
 import { WeekDaySettings } from "../settings/weekDaySettings";
-import { WeeksDetermintaionStandardsSettings } from "../settings/weeksDetermintaionStandardsSettings";
+import { calendaTypeSettings } from "../settings/calendaTypeSettings";
 import { WeekStandards } from "./weekStandards";
 import { Utils } from "../utils";
 
@@ -11,10 +11,10 @@ export class CalendarISO8061 extends Calendar {
         const isoCalendarSettings = new CalendarSettings();
         isoCalendarSettings.month = 0;
         isoCalendarSettings.day = 1;
+
         const isoWeekDaySettings = new WeekDaySettings();
         isoWeekDaySettings.daySelection = true;
         isoWeekDaySettings.day = 1;
-
         super(isoCalendarSettings, isoWeekDaySettings);
 
         //this.firstDayOfYear = calendarFormat.day;
@@ -103,9 +103,8 @@ export class CalendarISO8061 extends Calendar {
 
     public isChanged(
         calendarSettings: CalendarSettings,
-        weekDaySettings: WeekDaySettings,
-        weeksDetermintaionStandardsSettings: WeeksDetermintaionStandardsSettings
-    ): boolean {
-        return weeksDetermintaionStandardsSettings.weekStandard !== WeekStandards.ISO8061
-    }
+        calendaTypeSettings: calendaTypeSettings
+        ): boolean {
+            return calendaTypeSettings.weekStandard !== WeekStandards.ISO8061
+        }
 }

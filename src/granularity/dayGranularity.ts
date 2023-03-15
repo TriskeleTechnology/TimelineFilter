@@ -34,10 +34,12 @@ import { GranularityBase } from "./granularityBase";
 import { IGranularityRenderProps } from "./granularityRenderProps";
 import { GranularityType } from "./granularityType";
 import powerbiVisualsApi from "powerbi-visuals-api";
+import { dateFormatSettings } from "../settings/dateFormatSettings";
+import { CalendarSettings } from "../settings/calendarSettings";
 
 export class DayGranularity extends GranularityBase {
-    constructor(calendar: Calendar, locale: string) {
-        super(calendar, locale, Utils.GET_GRANULARITY_PROPS_BY_MARKER("Day"));
+    constructor(calendar: Calendar, locale: string, dateFormatSettings:dateFormatSettings, CalendarSettings: CalendarSettings) {
+        super(calendar, locale, Utils.GET_GRANULARITY_PROPS_BY_MARKER("Day"), dateFormatSettings, CalendarSettings);
     }
 
     public render(props: IGranularityRenderProps, isFirst: boolean): Selection<any, any, any, any> {
@@ -52,11 +54,15 @@ export class DayGranularity extends GranularityBase {
         return GranularityType.day;
     }
 
-    public splitDate(date: Date): (string | number)[] {
+    public splitDate(date: Date, dateFormatSettings: dateFormatSettings, calendarSettings: CalendarSettings): (string | number)[] {
+        var month = this.getMonthName(date)
+        var day = date.getDate()
+        var year = dateFormatSettings.yearFormat == "yy" ? "'" + this.getYearName(date) : this.getYearName(date)
+
         return [
-            this.shortMonthName(date),
-            date.getDate(),
-            this.calendar.determineYear(date),
+            month,
+            day,
+            year,
         ];
     }
 
@@ -64,15 +70,38 @@ export class DayGranularity extends GranularityBase {
         return firstDatePeriod.startDate.getTime() === secondDatePeriod.startDate.getTime();
     }
 
-    public generateLabel(datePeriod: ITimelineDatePeriod): ITimelineLabel {
-        const quarter: string = this.quarterText(datePeriod.startDate);
-        const monthName: string = this.shortMonthName(datePeriod.startDate);
-        const title: string = `${monthName} ${datePeriod.startDate.getDate()} ${datePeriod.year}`;
+    public generateLabel(datePeriod: ITimelineDatePeriod, dateFormatSettings: dateFormatSettings, calendar: Calendar, calendarSettings: CalendarSettings): ITimelineLabel {
+        // const quarter: string = this.getQuarterName(datePeriod.startDate);
+        var text:string;
+        var nexttext: string = '';
+
+        var currentdate = datePeriod.startDate;
+        var nextdate = datePeriod.endDate;
+
+        var dayName = dateFormatSettings.dayFormat == 'dd' ? this.getDayName(currentdate) : currentdate.getDate().toString();
+        var nextdayName = dateFormatSettings.dayFormat == 'dd' ? this.getDayName(nextdate) : nextdate.getDate().toString();
+
+        var dayofweek = dateFormatSettings.dayofweek == true ? this.getDayofWeekName(currentdate) : "";
+        var nextdayofweek = dateFormatSettings.dayofweek == true ? this.getDayofWeekName(nextdate) : "";
+
+        var monthName = this.getMonthName(currentdate);
+        var nextmonthName = this.getMonthName(calendar.getNextDate(currentdate));
+
+        var yearName = dateFormatSettings.yearFormat == "yy" ? "'" + this.getYearName(currentdate) : this.getYearName(currentdate);
+        var nextyearName = dateFormatSettings.yearFormat == "yy" ? "'" + this.getYearName(nextdate) : this.getYearName(nextdate)
+        
+        if (dateFormatSettings.datecategorization == true ){
+            text = `${dayofweek} ${monthName} ${dayName} ${yearName}`;
+            nexttext = ` - ${nextdayofweek} ${nextmonthName} ${nextdayName} ${nextyearName}`
+        }
+        else{
+            text = `${dayofweek} ${monthName} ${dayName} ${yearName}`;
+        }
 
         return {
             id: datePeriod.index,
-            text: `${monthName} ${datePeriod.startDate.getDate()} ${datePeriod.year}`,
-            title,
+            text: text + nexttext,
+            title: text  + nexttext
         };
     }
 }
